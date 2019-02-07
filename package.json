@@ -3,8 +3,11 @@
    "version": "0.1.0",
    "main": "index.js",
    "dependencies": {
-      "node-addon-api": "latest",
+      "jsverify": "^0.8.4",
       "lodash": "latest",
+      "mocha": "^5.2.0",
+      "node-addon-api": "latest",
+      "pinlist": "^0.8.0",
       "signalflip-js": "latest"
    },
    "scripts": {
