@@ -1,14 +1,14 @@
-{ 
+{
    "name": "test",
    "version": "0.1.0",
    "main": "index.js",
    "dependencies": {
       "node-addon-api": "latest",
-       "lodash": "latest",
-       "signalflip-js": "latest"
+      "lodash": "latest",
+      "signalflip-js": "latest"
    },
-    "scripts": {
-	"create-tb": "node src/create-tb.js",
+   "scripts": {
+      "create-tb": "node src/create-tb.js",
       "compile": "make verilate && cd obj_dir && make -f ../Makefile_obj createlib",
       "build": "node-gyp rebuild",
       "clean": "node-gyp clean && make clean",
