@@ -11,7 +11,8 @@
 #		 'obj_dir/Vtop_elastic__Trace__Slow.cpp'
 #		 '/usr/local/share/verilator/include/verilated.cpp'
 #     		 ],
-      'sources': ["<!@(node -p \"require('./getconfig.js').sources\")"],
+      'sources': ["<!@(node -p \"require('./getconfig.js').sources\")",
+      		 "<!@(ls -1 obj_dir/*.cpp)"],
 #      'sources': '<!(["node", ])',
       'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")",
       "<!@(node -p \"require('./getconfig.js').libraries\")"
