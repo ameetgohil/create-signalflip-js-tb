@@ -11,15 +11,16 @@
 #		 'obj_dir/Vtop_elastic__Trace__Slow.cpp'
 #		 '/usr/local/share/verilator/include/verilated.cpp'
 #     		 ],
-      'sources': ["<!@(node -p \"require('./getconfig.js').sources\")",
-      		 "<!@(ls -1 obj_dir/*.cpp)"],
+      'sources': ["<!@(node -p \"require('./getconfig.js').sources\")"],
+#      		 "<!@(ls -1 obj_dir/*.cpp)"],
 #      'sources': '<!(["node", ])',
       'include_dirs': ["<!@(node -p \"require('node-addon-api').include\")",
       "<!@(node -p \"require('./getconfig.js').libraries\")"
 #      "/usr/local/share/verilator/include",
 #      "./obj_dir"
       ],
-     'libraries': ["../obj_dir/verilator_global_libs.a"],
+     'libraries': ["../obj_dir/verilator_global_libs.a",
+     		  "../obj_dir/Vtop_elastic__ALL.a"],
 #      'ld_flags': ["-L/home/qubits/proj/veri-js/obj_dir/"],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
       'cflags!': [ '-fno-exceptions' ],

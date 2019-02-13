@@ -11,10 +11,11 @@
    },
    "scripts": {
       "create-tb": "node src/create-tb.js",
-      "compile": "make verilate && cd obj_dir && make -f ../Makefile_obj createlib",
-      "build": "node-gyp rebuild",
+       "compile": "make verilate && cd obj_dir && make -f ../Makefile_obj createlib",
+       "rebuild": "node-gyp rebuild",
+      "build": "node-gyp configure && node-gyp build -j",
       "clean": "node-gyp clean && make clean",
-      "all": "npm run clean && npm run compile && npm run build && npm run test",
+      "all": "npm run compile && npm run build && npm run test",
       "test": "node index.js",
       "gen": "node gensigs.js"
    },
