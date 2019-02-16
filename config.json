@@ -8,6 +8,8 @@
 	"cppsrc/signals.cpp"
     ],
     "libraries": [ "/usr/local/share/verilator/include",
+		   "/usr/local/share/verilator/include/vltstd",
+		   "/usr/local/share/verilator/include/gtkwave",
 		   "./obj_dir"
 		   ]
 

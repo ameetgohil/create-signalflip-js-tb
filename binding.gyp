@@ -19,20 +19,37 @@
 #      "/usr/local/share/verilator/include",
 #      "./obj_dir"
       ],
-     'libraries': ["../obj_dir/verilator_global_libs.a",
-     		  "../obj_dir/Vtop_elastic__ALL.a"],
-#      'ld_flags': ["-L/home/qubits/proj/veri-js/obj_dir/"],
+      'libraries': [
+	  "-lpthread",
+	  "-latomic",
+     	  "../obj_dir/Vtop_elastic__ALL.a",
+	  "../obj_dir/verilator_global_libs.a",
+	  "-lm"],
+      'ld_flags': ["-pthread", "-latomic", "-lpthread", "-lm", "-lstdc++", "-std=c++11"],
       'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
       'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions', '-MMD', '-MP', '-DVL_DEBUG=1' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
 #      'cflags!': [ '-fno-exceptions', '-fPIC'],
 #      'cflags_cc!': [ '-fno-exceptions', '-fPIC'],
-
-      'xcode_settings': {
-        'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-        'CLANG_CXX_LIBRARY': 'libc++',
-        'MACOSX_DEPLOYMENT_TARGET': '10.7'
-      },
+       'cflags' : [ '-std=c++11', '-pthread -w' ],
+#       'cflags_cc' : [ '-pthread', '-lpthread', '-latomic', '-lm', '-lstdc++' ],
+	'CXXFLAGS' : [ "-std=c++11" ],
+	'link_settings': {
+    			 'libraries': [
+      		     	   	      "-lm",
+      		     	   	      "-latomic",
+				      "-lpthread"
+    		     	 	      ],
+    			'library_dirs': [
+      					"/usr/lib",
+    					],
+	},
+#      'xcode_settings': {
+#      			'CXXFLAGS': [
+#			"-std=c++14",
+#			"-stdlib=libc++"
+#			]
+#      },
       'msvs_settings': {
         'VCCLCompilerTool': { 'ExceptionHandling': 1 },
       }
