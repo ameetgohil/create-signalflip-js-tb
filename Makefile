@@ -42,7 +42,12 @@ VERILATOR_FLAGS += -O3 -x-assign 0
 # Warn abount lint issues; may not want this on less solid designs
 VERILATOR_FLAGS += -Wall
 # Make waveforms
+TRACE = $(shell node -p "require('./config.json').waveform_format")
+ifeq ($(TRACE),fst)
+VERILATOR_FLAGS += --trace-fst
+else
 VERILATOR_FLAGS += --trace
+endif
 # Check SystemVerilog assertions
 VERILATOR_FLAGS += --assert
 # Generate coverage analysis
@@ -74,6 +79,9 @@ verilate:
 
 	@echo
 	@echo "-- VERILATE ----------------"
+#ifeq ($(TRACE),fst)
+#	@echo $(TRACE)
+#endif
 	$(VERILATOR) $(VERILATOR_FLAGS) -f input.vc $(TOP)
 
 run:

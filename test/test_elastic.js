@@ -13,7 +13,7 @@ const model = (din_array) => {
 		din_array.shift();
 	    }
 	    return dout;
-	}
+};
 
 describe('Basic Group', function () {
 
