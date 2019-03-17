@@ -60,18 +60,36 @@ VERILATOR_FLAGS += --coverage
 #VERILATOR_FLAGS += --gdbbt
 
 TOP = $(shell node -p "require('./config.json').dut_file")
+DUT_NAME = $(shell node -p "require('./config.json').dut_name")
+VERILATE_TOP_FILE = V$(DUT_NAME).h
 
 ######################################################################
-default: verilate
+default: all
 
-
+gen:
+	@node -e "require('signalflip-js').GenerateWrapper('./obj_dir/$(VERILATE_TOP_FILE)','$(DUT_NAME)','$(TRACE)')"
 
 compile:
 	@echo "-- COMPILE -----------------"
 # To compile, we can either just do what Verilator asks,
 # or call a submakefile where we can override the rules ourselves
 #	$(MAKE) -j 4 -C obj_dir -f Vtop.mk
-	$(MAKE) -j 4 -C obj_dir -f ../Makefile_obj
+	cd obj_dir && $(MAKE) -j 4 ../Makefile_obj
+
+lib:
+	cd obj_dir && $(MAKE) -f ../Makefile_obj createlib
+
+rebuild:
+	npm run rebuild
+
+build:
+	npm run build
+
+test:
+	npm run mocha
+
+
+all: verilate lib gen build test
 
 verilate:
 	@echo
@@ -83,35 +101,6 @@ verilate:
 #	@echo $(TRACE)
 #endif
 	$(VERILATOR) $(VERILATOR_FLAGS) -f input.vc $(TOP)
-
-run:
-	@echo
-	@echo "-- Verilator tracing example"
-
-	@echo
-	@echo "-- VERILATE ----------------"
-	$(VERILATOR) $(VERILATOR_FLAGS) -f input.vc src/top.sv cppsrc/main.cpp
-
-	@echo
-	@echo "-- COMPILE -----------------"
-# To compile, we can either just do what Verilator asks,
-# or call a submakefile where we can override the rules ourselves
-#	$(MAKE) -j 4 -C obj_dir -f Vtop.mk
-	$(MAKE) -j 4 -C obj_dir -f ../Makefile_obj
-
-	@echo
-	@echo "-- RUN ---------------------"
-	@mkdir -p logs
-	obj_dir/Vtop +trace
-
-	@echo
-	@echo "-- COVERAGE ----------------"
-	$(VERILATOR_COVERAGE) --annotate logs/annotated logs/coverage.dat
-
-	@echo
-	@echo "-- DONE --------------------"
-	@echo "To see waveforms, open vlt_dump.vcd in a waveform viewer"
-	@echo
 
 
 ######################################################################
