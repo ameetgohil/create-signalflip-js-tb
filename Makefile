@@ -62,7 +62,7 @@ VERILATOR_FLAGS += --coverage
 TOP = $(shell node -p "require('./config.json').dut_file")
 DUT_NAME = $(shell node -p "require('./config.json').dut_name")
 VERILATE_TOP_FILE = V$(DUT_NAME).h
-
+.PHONY: rebuild build test
 ######################################################################
 default: all
 
