@@ -18,10 +18,10 @@
       "compile": "make verilate && cd obj_dir && make -f ../Makefile_obj createlib",
       "rebuild": "cmake-js rebuild",
       "build": "cmake-js compile",
-      "clean": "cmake-js clean && make clean",
+      "clean": "cmake-js clean",
       "all": "npm run compile && npm run build && npm run mocha",
-       "test": "node index.js",
-       "mocha": "mocha",
+      "test": "node index.js",
+      "mocha": "mocha",
       "gen": "node gensigs.js"
    },
    "gypfile": true,
