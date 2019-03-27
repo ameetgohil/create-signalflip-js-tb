@@ -1,100 +1,134 @@
 const dut = require('../build/Release/dut.node');
-const {Sim, RisingEdge, FallingEdge, Interfaces} = require('signalflip-js');
+const {Sim, SimUtils, RisingEdge, FallingEdge, Interfaces} = require('signalflip-js');
+const { Clock } = SimUtils;
 const {Elastic} = Interfaces;
 const _ = require('lodash');
-const jsc = require("jsverify");
+//const chai = require('chai');
+//const expect = chai.expect;
+const jsc = require('jsverify');
 const assert = require('assert');
-let range = n => Array.from(Array(n).keys());
-const u = x => x >>> 0;
+
 const model = (din_array) => {
-	    let dout = [];
-	    while(din_array.length > 0) {
-		dout.push(din_array[0] << 2);
-		din_array.shift();
+    let dout = [];
+    while(din_array.length > 0) {
+	dout.push(din_array[0] << 2);
+	din_array.shift();
+    }
+    return dout;
+}
+
+let sim;
+let target, initiator;
+
+describe('Basic Group', () => {
+    beforeEach(() => {
+	// set up the environment
+	dut.init(); // Init dut
+	sim = new Sim(dut, dut.eval);
+
+	/*const init = () => {
+	    dut.t0_data(0);
+	    dut.t0_valid(0);
+	    dut.clk(0);
+	    dut.rstf(0);
+	};
+	init();*/
+
+	function* reset() {
+	    dut.rstf(0);
+	    for(let i of _.range(5)) {
+		yield* RisingEdge(dut.clk);
 	    }
-	    return dout;
-};
+	    dut.rstf(1);
+	}
+	sim.addTask(reset());
 
-describe('Basic Group', function () {
+	let clk = new Clock(dut.clk, 1);
+	sim.addClock(clk);
 
-    before(() => {
+	target = new Elastic(sim, 0, dut.clk, dut.t0_data, dut.t0_valid, dut.t0_ready, null);
+	initiator = new Elastic(sim, 1, dut.clk, dut.i0_data, dut.i0_valid, dut.i0_ready, null);
+	//target.print = true;
+	let din = _.range(10).map(x => x);
+	target.txArray = din.slice();
+	sim.finishTask(() => {
+	    let dout = model(din.slice());
+	    //		    assert(_.isEqual(dout, initiator.rxArray));
+	    
+	    
+	    dout.map((x,i) => {
+		if(x != initiator.rxArray[i])
+		    console.log('x: ', x, ' i: ', i, 'initiator[i]: ', initiator.rxArray[i]);
+	    });
+
+	    try{
+		//assert.deepEqual(dout, initiator.rxArray);
+	    } catch(e){
+		//console.log(e);
+		dut.finish();
+		throw(e);
+	    }
+	});
 	
-	;
+    });
+    it('Constant valid - Constant ready', () => {
+	//this.timeout(6000); // test timeout in milliseconds
+	dut.init("top_cc");
+	target.randomizeValid = ()=>{ return jsc.random(0,5); };
+	initiator.randomizeReady = ()=>{ return jsc.random(0,5); };
+	initiator.randomize = 0;
+	target.randomize = 0;
+
+	target.init();
+	//console.log(target.txArray);
+	initiator.init();
+
+	sim.run(100);
+    });
+    
+    it('Randomized valid - Constant Ready', () => {
+	//this.timeout(6000); // test timeout in milliseconds
+	dut.init("top_rc");
+	target.randomizeValid = ()=>{ return jsc.random(0,5); };
+	initiator.randomizeReady = ()=>{ return jsc.random(0,5); };
+	initiator.randomize = 0;
+	target.randomize = 1;
+	//initiator.print = true;
+	//target.print = true;
+	target.init();
+	initiator.init();
+
+	sim.run(1000);
+    });
+    
+    it('Constant valid - Randomized ready', () => {
+	//this.timeout(6000); // test timeout in milliseconds
+	dut.init("top_cr");
+	target.randomizeValid = ()=>{ return jsc.random(0,5); };
+	initiator.randomizeReady = ()=>{ return jsc.random(0,5); };
+	initiator.randomize = 1;
+	target.randomize = 0;
+
+	target.init();
+	initiator.init();
+
+	sim.run(1000);
     });
 
-    it('Basic', (done) => {
-	this.timeout(60000);
+    it('Randomized valid - Randomized ready', () => {
+	//this.timeout(6000); // test timeout in milliseconds
+	dut.init("top_rr");
+	target.randomizeValid = ()=>{ return jsc.random(0,5); };
+	initiator.randomizeReady = ()=>{ return jsc.random(0,5); };
+	initiator.randomize = 1;
+	target.randomize = 1;
 
-	let t = jsc.forall(jsc.constant(0), function () {
-	    dut.init();
+	target.init();
+	initiator.init();
 
-	    return new Promise(function(resolve, reject) {
-
-		const clk = new Sim(dut, dut.eval, dut.clk);
-
-		const init = () => {
-		    dut.t0_data(0);
-		    dut.t0_valid(0);
-		    dut.i0_ready(1);
-		    dut.clk(0);
-		    dut.rstf(0);
-		};
-		
-		init();
-		let i = 0;
-		clk.on('negedge', (props) => {
-		    if(i < 10) {
-			dut.rstf(0);
-		    } else {
-			dut.rstf(1);
-		    }
-		    i++;
-		});
-
-		const target = new Elastic(clk, 0, dut.clk, dut.t0_data, dut.t0_valid, dut.t0_ready, null);
-		const initiator = new Elastic(clk, 1, dut.clk, dut.i0_data, dut.i0_valid, dut.i0_ready, null);
-		initiator.randomize = 0;
-		target.randomize = 0;
-		
-		target.randomizeValid = ()=>{ return jsc.random(0,5); };
-		initiator.randomizeReady = ()=>{ return jsc.random(0,5); };
-
-		target.init();
-		initiator.init();
-		
-		let din = range(50).map(x => u(x));
-		target.txArray = din.slice();
-
-		clk.finishTask(() => {
-		    let dout = model(din.slice());
-		    //		    assert(_.isEqual(dout, initiator.rxArray));
-		    try{
-			assert.deepEqual(dout, initiator.rxArray);
-		    } catch(e){
-			dut.finish();
-		    }
-			       
-		    dout.map((x,i) => {
-			if(x != initiator.rxArray[i])
-			    console.log('x: ', x, ' i: ', i, 'initiator[i]: ', initiator.rxArray[i]);
-		    });
-		});
-
-		setImmediate(() => {try{
-
-            clk.run(1000);
-  
-            resolve(true);
-  
-          }catch(e){reject(e)}});
-        }); // promise
-      }); // forall
-  
-      const props = {tests: 100}; // , rngState:"0084da9315c6bfe072"
-      jsc.check(t, props).then( r => r === true ? done() : done(new Error(JSON.stringify(r))));
-    }); // it
+	sim.run(1000);
+    });
+    
+});
 
 
-}); // describe
-
-		
