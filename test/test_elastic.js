@@ -51,7 +51,7 @@ describe('Basic Group', () => {
 	//target.print = true;
 	let din = _.range(10).map(x => x);
 	target.txArray = din.slice();
-	sim.finishTask(() => {
+	sim.addTask(() => {
 	    let dout = model(din.slice());
 	    //		    assert(_.isEqual(dout, initiator.rxArray));
 	    
@@ -68,7 +68,7 @@ describe('Basic Group', () => {
 		dut.finish();
 		throw(e);
 	    }
-	});
+	},'POST_RUN');
 	
     });
     it('Constant valid - Constant ready', () => {
