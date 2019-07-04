@@ -62,7 +62,7 @@ describe('Basic Group', () => {
 	    });
 
 	    try{
-		//assert.deepEqual(dout, initiator.rxArray);
+		assert.deepEqual(dout, initiator.rxArray);
 	    } catch(e){
 		//console.log(e);
 		dut.finish();
