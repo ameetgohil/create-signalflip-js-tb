@@ -17,6 +17,7 @@ describe('Basic Group', () => {
 
 	// TODO: Create clock
 	//let clk = new Clock(dut.clk, 1)
+	//sim.addClock(clk)
 
 	// TODO: Add setup code (interfaces, transaction, ...) etc...
 
@@ -26,7 +27,7 @@ describe('Basic Group', () => {
     };
     it('test1', function () {
 	this.timeout(10000); // Set timeout to expected run time of the test in ms
-	let t = jsc.forall(jsc.constant(0), function {
+	let t = jsc.forall(jsc.constant(0), function () {
 	    setup('top');
 	    // TODO: customize txn, randomizer, set variables/signals
 	    
