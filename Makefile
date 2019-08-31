@@ -51,7 +51,7 @@ endif
 # Check SystemVerilog assertions
 VERILATOR_FLAGS += --assert
 # Generate coverage analysis
-VERILATOR_FLAGS += --coverage
+#VERILATOR_FLAGS += --coverage
 # MULTITHREADED
 #VERILATOR_FLAGS += --threads 2
 # Run Verilator in debug mode
