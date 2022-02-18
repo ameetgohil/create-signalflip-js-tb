@@ -77,7 +77,7 @@ compile:
 	cd obj_dir && $(MAKE) -j 4 ../Makefile_obj
 
 lib:
-	cd obj_dir && $(MAKE) -f ../Makefile_obj createlib
+	cd obj_dir && $(MAKE) -j$(shell nproc) -f ../Makefile_obj createlib
 
 rebuild:
 	npm run rebuild
